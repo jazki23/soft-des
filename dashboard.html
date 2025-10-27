@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Chart.js for graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Load Lucide icons (FIXED LINK) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style> 
+        body { font-family: 'Inter', sans-serif; } 
+        [data-lucide] {
+            width: 20px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+    <div class="flex h-screen">
+        <!-- Sidebar Navigation -->
+        <div class="w-64 bg-white shadow-lg flex flex-col justify-between">
+            <div>
+                <div class="p-6">
+                    <h1 class="text-2xl font-bold text-indigo-600">Team5-WebApp</h1>
+                </div>
+                <nav class="mt-6">
+                    <!-- Active Link -->
+                    <a href="/dashboard.html" class="flex items-center px-6 py-3 text-sm font-semibold text-white bg-indigo-600">
+                        <i data-lucide="layout-dashboard"></i>
+                        <span class="mx-3">Reports</span>
+                    </a>
+                    <!-- Inactive Link -->
+                    <a href="#" class="flex items-center px-6 py-3 text-sm font-semibold text-gray-600 hover:bg-gray-100">
+                        <i data-lucide="settings"></i>
+                        <span class="mx-3">Settings</span>
+                    </a>
+                </nav>
+            </div>
+            <!-- User Profile & Logout -->
+            <div id="userProfile" class="p-4 border-t border-gray-200">
+                <p class="text-sm text-gray-600">Loading user...</p>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-y-auto">
+            <div class="p-8">
+                <h2 class="text-2xl font-bold text-gray-800">DASHBOARD</h2>
+
+                <!-- Filter Bar -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">Timeframe</label>
+                        <select class="w-full mt-1 p-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option>All-time</option>
+                            <option>Last 30 Days</option>
+                            <option>Last 7 Days</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">People</label>
+                        <select class="w-full mt-1 p-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option>All</option>
+                            <option>User 1</option>
+                            <option>User 2</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-500">Topic</label>
+                        <select class="w-full mt-1 p-2 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option>All</option>
+                            <option>Topic A</option>
+                            <option>Topic B</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Data Cards Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
+                    <!-- Card 1: Deep Learning Model -->
+                    <div class="bg-white p-6 rounded-2xl shadow-lg flex flex-col justify-between">
+                        <div>
+                            <span class="text-sm font-medium text-gray-500">Deep-Learning Model</span>
+                            <p class="text-lg font-semibold text-gray-900 mt-1">Faster R-CNN + EfficientNet-B7</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Accuracy -->
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <span class="text-sm font-medium text-gray-500">Accuracy</span>
+                        <p class="text-5xl font-bold text-gray-900 mt-2">96%</p>
+                    </div>
+
+                    <!-- Card 3: Runtime -->
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <span class="text-sm font-medium text-gray-500">Runtime</span>
+                        <p class="text-5xl font-bold text-gray-900 mt-2">2m 34s</p>
+                    </div>
+
+                    <!-- Card 4: Main Bar Chart -->
+                    <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-lg">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-500">Severity Level</span>
+                            <select class="p-1 text-sm bg-gray-100 border border-gray-300 rounded-lg focus:outline-none">
+                                <option>Day</option>
+                                <option>Week</option>
+                            </select>
+                        </div>
+                        <div class="h-64 mt-4">
+                            <canvas id="severityChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Card 5: Width Gain -->
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <span class="text-sm font-medium text-gray-500">Width Gain</span>
+                        <p class="text-4xl font-bold text-gray-900 mt-2">64%</p>
+                        <div class="h-20 mt-2">
+                            <canvas id="widthChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Card 6: Length Gain -->
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <span class="text-sm font-medium text-gray-500">Length Gain</span>
+                        <p class="text-4xl font-bold text-gray-900 mt-2">86%</p>
+                        <div class="h-20 mt-2">
+                            <canvas id="lengthChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Card 7: Depth Gain -->
+                    <div class="bg-white p-6 rounded-2xl shadow-lg">
+                        <span class="text-sm font-medium text-gray-500">Depth Gain</span>
+                        <p class="text-4xl font-bold text-green-600 mt-2">+34%</I>
+                        <div class="h-20 mt-2">
+                            <canvas id="depthChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Chart.js Rendering Function ---
+        function renderCharts() {
+            // Main Bar Chart
+            const severityCtx = document.getElementById('severityChart').getContext('2d');
+            new Chart(severityCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7', 'Day 8', 'Day 9', 'Day 10', 'Day 11', 'Day 12'],
+                    datasets: [{
+                        label: 'Severity',
+                        data: [100, 150, 140, 250, 280, 200, 250, 120, 280, 320, 380, 420],
+                        backgroundColor: 'rgba(79, 70, 229, 0.7)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderRadius: 6,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { display: false } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+
+            // Helper for small line charts
+            const lineChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { display: false },
+                    x: { display: false }
+                },
+                elements: {
+                    line: {
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        borderWidth: 2,
+                        tension: 0.4
+                    },
+                    point: { radius: 0 }
+                }
+            };
+            const lineData = (data) => ({
+                labels: ['1', '2', '3', '4', '5', '6', '7'],
+                datasets: [{ data: data }]
+            });
+
+            // Width Chart
+            const widthCtx = document.getElementById('widthChart').getContext('2d');
+            new Chart(widthCtx, { type: 'line', data: lineData([20, 40, 30, 50, 45, 60, 50]), options: lineChartOptions });
+
+            // Length Chart
+            const lengthCtx = document.getElementById('lengthChart').getContext('2d');
+            new Chart(lengthCtx, { type: 'line', data: lineData([30, 20, 40, 35, 50, 40, 60]), options: lineChartOptions });
+
+            // Depth Chart
+            const depthCtx = document.getElementById('depthChart').getContext('2d');
+            new Chart(depthCtx, { type: 'line', data: lineData([40, 30, 50, 45, 60, 55, 70]), options: lineChartOptions });
+        }
+
+
+        // --- Security & Data-Loading Script ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            const userProfileDiv = document.getElementById('userProfile');
+            const token = localStorage.getItem('access_token');
+
+            // 1. SECURITY CHECK
+            if (!token) {
+                window.location.replace('/'); 
+                return;
+            }
+
+            let userData;
+            // 2. FETCH USER DATA (Authentication Check)
+            try {
+                const response = await fetch('/users/me', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    userData = await response.json();
+                } else {
+                    // Token is invalid, redirect to login
+                    console.error('Authentication failed.');
+                    localStorage.removeItem('access_token');
+                    window.location.replace('/');
+                    return; // Stop execution
+                }
+            } catch (authError) {
+                // Network error or server is down
+                console.error('Error fetching user data:', authError);
+                localStorage.removeItem('access_token');
+                window.location.replace('/');
+                return; // Stop execution
+            }
+
+            // 3. RENDER THE PAGE
+            // If we get here, userData is valid.
+            try {
+                const userName = userData.username;
+                const userEmail = userData.email;
+
+                // Populate user profile section
+                userProfileDiv.innerHTML = `
+                    <div class="px-6">
+                        <p class="font-semibold text-gray-800">${userName}</p>
+                        <p class="text-sm text-gray-600">${userEmail}</p>
+                    </div>
+                    <button id="logoutButton" class="w-full flex items-center justify-center gap-2 mt-4 py-2 text-sm font-semibold text-red-500 hover:bg-red-50 rounded-lg">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                        <span>Logout</span>
+                    </button>
+                `;
+
+                // Add logout logic
+                document.getElementById('logoutButton').addEventListener('click', () => {
+                    localStorage.removeItem('access_token'); 
+                    window.location.replace('/'); 
+                });
+
+                // ACTIVATE ICONS
+                lucide.createIcons();
+
+                // RENDER CHARTS
+                renderCharts();
+
+            } catch (renderError) {
+                // This new catch block handles rendering errors
+                console.error("Error rendering dashboard content:", renderError);
+                userProfileDiv.innerHTML = `<p class="px-6 text-sm text-red-500">Error rendering page.</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
