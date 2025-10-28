@@ -1,7 +1,6 @@
 import pytest
 import requests
 
-# Base URL of your running server
 BASE_URL = "http://127.0.0.1:8000"
 
 # Use a fixed user for repeatable tests
@@ -11,7 +10,7 @@ test_user = {
     "password": "testpassword123"
 }
 
-# This dictionary will store the auth token (though Test 5 won't need it now)
+# This dictionary will store the auth token 
 session_data = {}
 
 def test_01_successful_signup():
