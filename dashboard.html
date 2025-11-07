@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Load Chart.js for graphs -->
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Load Lucide icons (FIXED LINK) -->
+    
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style> 
@@ -20,37 +20,37 @@
 </head>
 <body class="bg-gray-50 text-gray-900">
     <div class="flex h-screen">
-        <!-- Sidebar Navigation -->
+       
         <div class="w-64 bg-white shadow-lg flex flex-col justify-between">
             <div>
                 <div class="p-6">
                     <h1 class="text-2xl font-bold text-indigo-600">Team5-WebApp</h1>
                 </div>
                 <nav class="mt-6">
-                    <!-- Active Link -->
+                   
                     <a href="/dashboard.html" class="flex items-center px-6 py-3 text-sm font-semibold text-white bg-indigo-600">
                         <i data-lucide="layout-dashboard"></i>
                         <span class="mx-3">Reports</span>
                     </a>
-                    <!-- Inactive Link -->
+                    
                     <a href="#" class="flex items-center px-6 py-3 text-sm font-semibold text-gray-600 hover:bg-gray-100">
                         <i data-lucide="settings"></i>
                         <span class="mx-3">Settings</span>
                     </a>
                 </nav>
             </div>
-            <!-- User Profile & Logout -->
+            
             <div id="userProfile" class="p-4 border-t border-gray-200">
                 <p class="text-sm text-gray-600">Loading user...</p>
             </div>
         </div>
 
-        <!-- Main Content -->
+        
         <div class="flex-1 flex flex-col overflow-y-auto">
             <div class="p-8">
                 <h2 class="text-2xl font-bold text-gray-800">DASHBOARD</h2>
 
-                <!-- Filter Bar -->
+                
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
                     <div>
                         <label class="text-sm font-medium text-gray-500">Timeframe</label>
@@ -78,9 +78,9 @@
                     </div>
                 </div>
 
-                <!-- Data Cards Grid -->
+               
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
-                    <!-- Card 1: Deep Learning Model -->
+                   
                     <div class="bg-white p-6 rounded-2xl shadow-lg flex flex-col justify-between">
                         <div>
                             <span class="text-sm font-medium text-gray-500">Deep-Learning Model</span>
@@ -88,19 +88,19 @@
                         </div>
                     </div>
 
-                    <!-- Card 2: Accuracy -->
+                    
                     <div class="bg-white p-6 rounded-2xl shadow-lg">
                         <span class="text-sm font-medium text-gray-500">Accuracy</span>
                         <p class="text-5xl font-bold text-gray-900 mt-2">96%</p>
                     </div>
 
-                    <!-- Card 3: Runtime -->
+                   
                     <div class="bg-white p-6 rounded-2xl shadow-lg">
                         <span class="text-sm font-medium text-gray-500">Runtime</span>
                         <p class="text-5xl font-bold text-gray-900 mt-2">2m 34s</p>
                     </div>
 
-                    <!-- Card 4: Main Bar Chart -->
+                   
                     <div class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-lg">
                         <div class="flex justify-between items-center">
                             <span class="text-sm font-medium text-gray-500">Severity Level</span>
@@ -114,7 +114,7 @@
                         </div>
                     </div>
 
-                    <!-- Card 5: Width Gain -->
+                    
                     <div class="bg-white p-6 rounded-2xl shadow-lg">
                         <span class="text-sm font-medium text-gray-500">Width Gain</span>
                         <p class="text-4xl font-bold text-gray-900 mt-2">64%</p>
@@ -123,7 +123,7 @@
                         </div>
                     </div>
 
-                    <!-- Card 6: Length Gain -->
+                    
                     <div class="bg-white p-6 rounded-2xl shadow-lg">
                         <span class="text-sm font-medium text-gray-500">Length Gain</span>
                         <p class="text-4xl font-bold text-gray-900 mt-2">86%</p>
@@ -132,7 +132,7 @@
                         </div>
                     </div>
 
-                    <!-- Card 7: Depth Gain -->
+                    
                     <div class="bg-white p-6 rounded-2xl shadow-lg">
                         <span class="text-sm font-medium text-gray-500">Depth Gain</span>
                         <p class="text-4xl font-bold text-green-600 mt-2">+34%</I>
@@ -146,9 +146,9 @@
     </div>
 
     <script>
-        // --- Chart.js Rendering Function ---
+        
         function renderCharts() {
-            // Main Bar Chart
+           
             const severityCtx = document.getElementById('severityChart').getContext('2d');
             new Chart(severityCtx, {
                 type: 'bar',
@@ -174,7 +174,7 @@
                 }
             });
 
-            // Helper for small line charts
+            
             const lineChartOptions = {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -211,7 +211,7 @@
         }
 
 
-        // --- Security & Data-Loading Script ---
+       
         document.addEventListener('DOMContentLoaded', async () => {
             const userProfileDiv = document.getElementById('userProfile');
             const token = localStorage.getItem('access_token');
