@@ -11,7 +11,7 @@ test_user = {
     "password": "testpassword123"
 }
 
-# This dictionary will store the auth token (though Test 5 won't need it now)
+# This dictionary will store the auth token
 session_data = {}
 
 def test_01_successful_signup():
@@ -26,13 +26,9 @@ def test_01_successful_signup():
     try:
         login_resp = requests.post(f"{BASE_URL}/login", data=login_data)
         if login_resp.status_code == 200:
-            token = login_resp.json()["access_token"]
-            headers = {"Authorization": f"Bearer {token}"}
-            # If login worked, try deleting (requires a delete endpoint, which we don't have, so skip for now)
-            # requests.delete(f"{BASE_URL}/users/me", headers=headers) # Assumes a DELETE endpoint exists
-            pass # Replace with actual delete logic if available
+            pass # User exists, we'll just check for conflict
     except requests.exceptions.RequestException:
-        pass # Ignore connection errors if server isn't ready for delete check
+        pass # Server not running, etc.
 
     # Now, perform the actual signup test
     response = requests.post(f"{BASE_URL}/signup", json=test_user)
@@ -72,7 +68,7 @@ def test_03_successful_login():
     data = response.json()
     assert "access_token" in data
     assert data["token_type"] == "bearer"
-    # Save the token for the next tests (though Test 5 won't rely on it)
+    # Save the token for the next tests
     session_data["token"] = data["access_token"]
 
 def test_04_invalid_password_login():
@@ -124,3 +120,86 @@ def test_06_access_protected_route_no_token():
     assert response.status_code == 401, f"Protected route allowed access with no token: {response.text}"
     data = response.json()
     assert data["detail"] == "Not authenticated"
+
+# --- NEW TEST CASES ---
+
+def test_07_signup_invalid_email():
+    """
+    Test Case 7: Signup with Invalid Email
+    Why: To ensure Pydantic schema validates the email format.
+    Expected: HTTP 422 (Unprocessable Entity)
+    """
+    invalid_user = {
+        "username": "email_test_user",
+        "email": "not-a-real-email", # Invalid email
+        "password": "testpassword123"
+    }
+    response = requests.post(f"{BASE_URL}/signup", json=invalid_user)
+    assert response.status_code == 422, f"Allowed invalid email: {response.text}"
+    data = response.json()
+    # Check that the error message is about the 'email' field
+    assert data["detail"][0]["loc"][1] == "email"
+
+def test_08_signup_short_password():
+    """
+    Test Case 8: Signup with Short Password
+    Why: To verify Pydantic schema validates password min_length.
+    Expected: HTTP 422 (Unprocessable Entity)
+    """
+    invalid_user = {
+        "username": "shortpass_user",
+        "email": "shortpass@example.com",
+        "password": "123" # Too short (min 8)
+    }
+    response = requests.post(f"{BASE_URL}/signup", json=invalid_user)
+    assert response.status_code == 422, f"Allowed short password: {response.text}"
+    data = response.json()
+    # Check that the error message is about the 'password' field
+    assert data["detail"][0]["loc"][1] == "password"
+
+def test_09_signup_missing_field():
+    """
+    Test Case 9: Signup with Missing Field
+    Why: To confirm Pydantic schema enforces required fields.
+    Expected: HTTP 422 (Unprocessable Entity)
+    """
+    invalid_user = {
+        "username": "missing_field_user",
+        "password": "testpassword123"
+        # 'email' field is missing
+    }
+    response = requests.post(f"{BASE_URL}/signup", json=invalid_user)
+    assert response.status_code == 422, f"Allowed missing 'email' field: {response.text}"
+    data = response.json()
+    # Check that the error is about a missing 'email'
+    assert data["detail"][0]["loc"][1] == "email"
+    assert data["detail"][0]["type"] == "missing"
+
+def test_10_login_nonexistent_user():
+    """
+    Test Case 10: Login with Non-Existent User
+    Why: To ensure a non-existent user cannot log in.
+    Expected: HTTP 401 (Unauthorized)
+    """
+    login_data = {
+        "username": "nonexistentuser",
+        "password": "testpassword123"
+    }
+    response = requests.post(f"{BASE_URL}/login", data=login_data)
+    assert response.status_code == 401, f"Allowed login for non-existent user: {response.text}"
+    data = response.json()
+    # Should be the *same error* as wrong password for security
+    assert data["detail"] == "Incorrect username or password"
+
+def test_11_access_protected_malformed_token():
+    """
+    Test Case 11: Access Protected Route with Malformed Token
+    Why: To ensure the JWT dependency handles bad tokens.
+    Expected: HTTP 401 (Unauthorized)
+    """
+    headers = {"Authorization": "Bearer not.a.real.token"}
+
+    response = requests.get(f"{BASE_URL}/users/me", headers=headers)
+    assert response.status_code == 401, f"Allowed access with malformed token: {response.text}"
+    data = response.json()
+    assert data["detail"] == "Could not validate credentials"
