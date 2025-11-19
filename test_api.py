@@ -136,8 +136,7 @@ def test_06_access_protected_route_no_token():
     data = response.json()
     assert data["detail"] == "Not authenticated"
 
-
-# --- Added Test Cases (7-10) ---
+# 7
 
 def test_07_signup_invalid_email():
     """
@@ -200,12 +199,17 @@ def test_09_signup_missing_field():
     
     assert response.status_code in [422, 400], f"Allowed signup with missing field: {response.text}"
     
+    # --- FIX APPLIED HERE ---
     try:
         data = response.json()
-        assert "username" in str(data) and "Missing" in str(data)
+        # The API uses 'username' and 'Field required' or 'missing'
+        response_string = str(data)
+        
+        # Check for the key indicators: the field name 'username' and a message about it being 'required'
+        assert "username" in response_string and ("required" in response_string or "missing" in response_string.lower())
     except requests.exceptions.JSONDecodeError:
+        # This handles cases where the response is not valid JSON
         pass
-
 
 def test_10_login_nonexistent_user():
     """
