@@ -135,3 +135,91 @@ def test_06_access_protected_route_no_token():
 
     data = response.json()
     assert data["detail"] == "Not authenticated"
+
+
+# --- Added Test Cases (7-10) ---
+
+def test_07_signup_invalid_email():
+    """
+    Test Case 7: Signup using Invalid Email Address
+    Why: Verifies that the system rejects improperly formatted email inputs.
+    Expected: HTTP 422 (Unprocessable Entity) or 400 (Bad Request)
+    """
+    invalid_email_user = {
+        "username": "bademailuser",
+        "email": "invalid_email.com",  # Missing '@' symbol
+        "password": test_user["password"]
+    }
+    response = requests.post(f"{BASE_URL}/signup", json=invalid_email_user)
+    
+    # APIs often return 422 for validation errors based on request body schema
+    assert response.status_code in [422, 400], f"Allowed signup with invalid email: {response.text}"
+    
+    # Check for validation detail message structure (often specific to framework like FastAPI)
+    try:
+        data = response.json()
+        assert "email" in str(data)  # Look for the word 'email' in the error message
+    except requests.exceptions.JSONDecodeError:
+        pass # Handle case where response is not JSON
+
+
+def test_08_signup_short_password():
+    """
+    Test Case 8: Signup using Short Password
+    Why: Validates that the system enforces minimum password length requirements.
+    Expected: HTTP 422 (Unprocessable Entity) or 400 (Bad Request)
+    """
+    short_password_user = {
+        "username": "shortpassuser",
+        "email": "shortpass@example.com",
+        "password": "short"  # Assuming minimum length > 5
+    }
+    response = requests.post(f"{BASE_URL}/signup", json=short_password_user)
+    
+    assert response.status_code in [422, 400], f"Allowed signup with short password: {response.text}"
+    
+    try:
+        data = response.json()
+        assert "password" in str(data) and "length" in str(data) # Look for mention of password length
+    except requests.exceptions.JSONDecodeError:
+        pass
+
+
+def test_09_signup_missing_field():
+    """
+    Test Case 9: Signup with Missing Required Field
+    Why: Ensures the system validates that all mandatory fields are completed.
+    Expected: HTTP 422 (Unprocessable Entity) or 400 (Bad Request)
+    """
+    missing_field_user = {
+        "email": "missingfield@example.com",
+        "password": "validpassword123"
+        # "username" is intentionally missing
+    }
+    response = requests.post(f"{BASE_URL}/signup", json=missing_field_user)
+    
+    assert response.status_code in [422, 400], f"Allowed signup with missing field: {response.text}"
+    
+    try:
+        data = response.json()
+        assert "username" in str(data) and "Missing" in str(data)
+    except requests.exceptions.JSONDecodeError:
+        pass
+
+
+def test_10_login_nonexistent_user():
+    """
+    Test Case 10: Logging in with Nonexistent User
+    Why: Verifies that the system handles authentication attempts with unregistered credentials.
+    Expected: HTTP 401 (Unauthorized)
+    """
+    nonexistent_login = {
+        "username": "truly_nonexistent_user_12345",
+        "password": "random_non_matching_password"
+    }
+    response = requests.post(f"{BASE_URL}/login", data=nonexistent_login)
+    
+    assert response.status_code == 401, f"Allowed login for nonexistent user: {response.text}"
+    
+    data = response.json()
+    assert data["detail"] == "Incorrect username or password"
